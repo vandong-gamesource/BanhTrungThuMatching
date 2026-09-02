@@ -38,11 +38,9 @@ public partial class BoardController : MonoBehaviour
             if (horizontalMatch.Count >= 3)
             {
                 matchLines.Add(new MatchLine(MatchDirection.Horizontal, new List<int>(horizontalMatch)));
+
             }
-            else
-            {
-                horizontalMatch.Clear();
-            }
+            horizontalMatch.Clear();
         }
         Debug.Log("Total horizontal matches found: " + matchLines.Count);
         // Check vertical matches
@@ -76,17 +74,15 @@ public partial class BoardController : MonoBehaviour
             if (verticalMatch.Count >= 3)
             {
                 matchLines.Add(new MatchLine(MatchDirection.Vertical, new List<int>(verticalMatch)));
-            }else
-            {
-                verticalMatch.Clear();
             }
+            verticalMatch.Clear();
         }
         Debug.Log("Total matches found: " + matchLines.Count);
         return matchLines;
     }
     private List<MatchLine> CheckMatchForIndex(int index)
     {
-        List<MatchLine> matchLines = new List<MatchLine>();
+        List<MatchLine> matchLines = new();
         int x = index / width;
         int y = index % width;
         // Check horizontal match
@@ -242,13 +238,25 @@ public partial class BoardController : MonoBehaviour
         }
         return matchResults;
     }
-    private IEnumerator AnalyzeMatchResult(List<MatchResult> matchResults)
+    private List<int> GetDestroyIndices(List<MatchResult> matchResults)
     {
-        List<int> allDestroyIndices = new();
-        foreach (var matchResult in matchResults)
+        List<int> destroyIndices = new();
+        for (int i = 0; i < matchResults.Count; i++)
         {
-            allDestroyIndices.Union(matchResult.destroyIndices);
+            destroyIndices.AddRange(matchResults[i].destroyIndices);
         }
-        yield return DestroyCakes(allDestroyIndices);
+        return destroyIndices;
+    }
+    private List<int> GetSpecialIndices(List<MatchResult> matchResults)
+    {
+        List<int> specialIndices = new();
+        for (int i = 0; i < matchResults.Count; i++)
+        {
+            if (matchResults[i].specialCakeType != SpecialCakeType.None)
+            {
+                specialIndices.Add(matchResults[i].spawnIndex);
+            }
+        }
+        return specialIndices;
     }
 }

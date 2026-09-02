@@ -19,5 +19,15 @@ public partial class BoardController : MonoBehaviour
         }
         return _slotPositions[index];
     }
+    private void RemoveCakeAtIndex(int index)
+    {
+        if (index < 0 || index >= _cakes.Count)
+        {
+            Debug.LogError("Index out of range: " + index);
+            return;
+        }
+        _cakes.RemoveAt(index);
+        _cakeRects.RemoveAt(index);
+    }
 
 }

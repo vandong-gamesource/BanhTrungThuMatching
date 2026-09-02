@@ -27,4 +27,9 @@ public class Cake : MonoBehaviour
             image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f); // Set transparency
         }
     }
+    public void DestroyCake()
+    {
+        // Add any destruction animation or effects here
+        Destroy(gameObject);
+    }
 }

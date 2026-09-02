@@ -63,4 +63,9 @@ public partial class BoardController : MonoBehaviour
     {
         return x * width + y;
     }
+    private IEnumerator Gravity(List<int> destroyIndices)
+    {
+        
+        yield return null;
+    }
 }
