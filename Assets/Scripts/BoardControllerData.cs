@@ -29,5 +29,9 @@ public partial class BoardController : MonoBehaviour
         _cakes.RemoveAt(index);
         _cakeRects.RemoveAt(index);
     }
+    private void UpdateBoard()
+    {
+        
+    }
 
 }

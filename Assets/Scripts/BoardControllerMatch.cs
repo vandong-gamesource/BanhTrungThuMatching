@@ -14,7 +14,15 @@ public partial class BoardController : MonoBehaviour
             for (int x = 0; x < width; x++)
             {
                 int index = GetIndex(x, y);
-                if (horizontalMatch.Count == 0)
+                if (_cakes[index] == null)
+                {
+                    if (horizontalMatch.Count >= 3)
+                    {
+                        matchLines.Add(new MatchLine(MatchDirection.Horizontal, new List<int>(horizontalMatch)));
+                    }
+                    horizontalMatch.Clear();
+                }
+                else if (horizontalMatch.Count == 0)
                 {
                     horizontalMatch.Add(index);
                 }
@@ -50,7 +58,15 @@ public partial class BoardController : MonoBehaviour
             for (int y = 0; y < height; y++)
             {
                 int index = GetIndex(x, y);
-                if (verticalMatch.Count == 0)
+                if (_cakes[index] == null)
+                {
+                    if (verticalMatch.Count >= 3)
+                    {
+                        matchLines.Add(new MatchLine(MatchDirection.Vertical, new List<int>(verticalMatch)));
+                    }
+                    verticalMatch.Clear();
+                }
+                else if (verticalMatch.Count == 0)
                 {
                     verticalMatch.Add(index);
                 }
@@ -83,49 +99,57 @@ public partial class BoardController : MonoBehaviour
     private List<MatchLine> CheckMatchForIndex(int index)
     {
         List<MatchLine> matchLines = new();
-        int x = index / width;
-        int y = index % width;
+        if (index < 0 || index >= _cakes.Count || _cakes[index] == null)
+        {
+            return matchLines;
+        }
+
+        int x = index % width;
+        int y = index / width;
+        CakeType targetType = _cakes[index].cakeType;
+
         // Check horizontal match
         List<int> horizontalMatch = new();
-        for (int i = 0; i < width; i++)
+        for (int currentX = 0; currentX < width; currentX++)
         {
-            int currentIndex = i * width + y;
-            if (_cakes[currentIndex].cakeType == _cakes[index].cakeType)
+            int currentIndex = GetIndex(currentX, y);
+            if (_cakes[currentIndex] != null && _cakes[currentIndex].cakeType == targetType)
             {
                 horizontalMatch.Add(currentIndex);
             }
             else
             {
-                if (horizontalMatch.Count >= 3)
+                if (horizontalMatch.Count >= 3 && horizontalMatch.Contains(index))
                 {
                     matchLines.Add(new MatchLine(MatchDirection.Horizontal, new List<int>(horizontalMatch)));
                 }
                 horizontalMatch.Clear();
             }
         }
-        if (horizontalMatch.Count >= 3)
+        if (horizontalMatch.Count >= 3 && horizontalMatch.Contains(index))
         {
             matchLines.Add(new MatchLine(MatchDirection.Horizontal, new List<int>(horizontalMatch)));
         }
+
         // Check vertical match
         List<int> verticalMatch = new();
-        for (int j = 0; j < height; j++)
+        for (int currentY = 0; currentY < height; currentY++)
         {
-            int currentIndex = x * width + j;
-            if (_cakes[currentIndex].cakeType == _cakes[index].cakeType)
+            int currentIndex = GetIndex(x, currentY);
+            if (_cakes[currentIndex] != null && _cakes[currentIndex].cakeType == targetType)
             {
                 verticalMatch.Add(currentIndex);
             }
             else
             {
-                if (verticalMatch.Count >= 3)
+                if (verticalMatch.Count >= 3 && verticalMatch.Contains(index))
                 {
                     matchLines.Add(new MatchLine(MatchDirection.Vertical, new List<int>(verticalMatch)));
                 }
                 verticalMatch.Clear();
             }
         }
-        if (verticalMatch.Count >= 3)
+        if (verticalMatch.Count >= 3 && verticalMatch.Contains(index))
         {
             matchLines.Add(new MatchLine(MatchDirection.Vertical, new List<int>(verticalMatch)));
         }
@@ -245,7 +269,7 @@ public partial class BoardController : MonoBehaviour
         {
             destroyIndices.AddRange(matchResults[i].destroyIndices);
         }
-        return destroyIndices;
+        return destroyIndices.Except(GetSpecialIndices(matchResults)).ToList();
     }
     private List<int> GetSpecialIndices(List<MatchResult> matchResults)
     {

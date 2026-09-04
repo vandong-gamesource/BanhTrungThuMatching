@@ -24,7 +24,7 @@ public class Cake : MonoBehaviour
                 SpecialCakeType.Special => Color.white,// Highlight for Special
                 _ => Color.gray,// Default highlight color
             };
-            image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f); // Set transparency
+            image.color = new Color(image.color.r, image.color.g, image.color.b, 0.9f); // Set transparency
         }
     }
     public void DestroyCake()

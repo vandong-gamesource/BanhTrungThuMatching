@@ -46,7 +46,7 @@ public partial class BoardController : MonoBehaviour
         destroyIndices.ForEach(index => {
             _cakes[index].DestroyCake();
             _cakes.RemoveAt(index);
-        });
+            _cakeRects.RemoveAt(index);});
         yield return null;
     }
     private IEnumerator GameLoop()
@@ -59,16 +59,15 @@ public partial class BoardController : MonoBehaviour
             {
                 List<MatchResult> matchResults = GetMatchResult(matchLines);
                 List<int> destroyIndices = GetDestroyIndices(matchResults);
-                List<int> specialIndices = GetSpecialIndices(matchResults);
-                yield return ClearMatchesResult(destroyIndices);
-                yield return Gravity(destroyIndices);
+                yield return DestroyCakes(destroyIndices);
+                yield return RefillAndApplyGravity(destroyIndices);
             }
             else
             {
                 Debug.Log("No matches found. Ending game loop.");
                 break;
             }
-            break;
+            // break;
         }
         Debug.Log("Game loop ended.");
     }   
